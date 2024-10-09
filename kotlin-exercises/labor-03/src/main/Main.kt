@@ -1,9 +1,25 @@
 package main
 
-fun main(args: Array<String>) {
-    println("Hello World!")
+import ItemRepository
 
-    // Try adding program arguments via Run/Debug configuration.
-    // Learn more about running applications: https://www.jetbrains.com/help/idea/running-applications.html.
-    println("Program arguments: ${args.joinToString()}")
+fun main() {
+    val repository = ItemRepository
+
+    val testQuizItem = repository.randomItem()
+    print("Question = $testQuizItem\n")
+    println("---------------------------------------------------------------------------------")
+
+    val service = ItemService(repository)
+
+    // Test
+    val quizItems = service.selectRandomItems(3)
+    for (quizItem in quizItems){
+        println("Question = " + quizItem)
+    }
+    println("---------------------------------------------------------------------------------")
+    print("Enter the number of questions you want to attempt: ")
+    val numberOfQuestions = readLine()?.toIntOrNull() ?: 5
+
+    val controller = ItemController(service)
+    controller.quiz(numberOfQuestions)
 }
