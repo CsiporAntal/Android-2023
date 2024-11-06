@@ -7,13 +7,19 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tasty.recipesapp.R
 import com.tasty.recipesapp.databinding.ActivityMainBinding
+import com.tasty.recipesapp.repository.RecipeRepository
+import com.tasty.recipesapp.repository.recipe.model.RecipeModel
 import com.tasty.recipesapp.ui.home.HomeFragment
 import com.tasty.recipesapp.ui.profile.ProfileFragment
 import com.tasty.recipesapp.ui.recipe.RecipesFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private val recipeRepository by lazy { RecipeRepository(this) } // Initialize RecipeRepository
 
     // Initialize fragments
     private val homeFragment = HomeFragment()
@@ -26,6 +32,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         Log.i("MainActivity", "onCreate")
+
+        // Fetch recipes and log them
+        fetchAndLogRecipes()
 
         // Set default fragment
         replaceFragment(homeFragment)
@@ -55,5 +64,14 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
+    }
+
+    // TEST Function to fetch recipes and log them
+    private fun fetchAndLogRecipes() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val recipes: List<RecipeModel> = recipeRepository.getAllRecipes()
+            recipes.forEach { recipe ->
+                Log.d("Recipe Info", "Recipe: ${recipe.name} Recipe Descripotion:${recipe.description}" )}
+        }
     }
 }
