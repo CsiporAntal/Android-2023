@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/fragment_recipe_detail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp">
@@ -17,7 +17,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:scaleType="centerCrop"
-                android:background="@color/black"/>
+                android:background="@color/black" />
 
         <!-- Recipe Name -->
         <TextView
@@ -27,7 +27,7 @@
                 android:text="Recipe Name"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="16dp" />
 
         <!-- Recipe Description -->
         <TextView
@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:text="Recipe Description"
                 android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp" />
 
         <!-- Number of Servings -->
         <TextView
@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:text="Servings: 4"
                 android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp" />
 
         <!-- Ingredients Section -->
         <TextView
@@ -55,14 +55,14 @@
                 android:text="Ingredients"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="16dp" />
 
         <LinearLayout
                 android:id="@+id/linearLayoutIngredients"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp" />
 
         <!-- Instructions Section -->
         <TextView
@@ -72,14 +72,14 @@
                 android:text="Instructions"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="16dp" />
 
         <LinearLayout
                 android:id="@+id/linearLayoutInstructions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp" />
 
         <!-- Nutrition Section -->
         <TextView
@@ -89,14 +89,14 @@
                 android:text="Nutrition Information"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="16dp" />
 
         <LinearLayout
                 android:id="@+id/linearLayoutNutrition"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp" />
 
     </LinearLayout>
 </ScrollView>

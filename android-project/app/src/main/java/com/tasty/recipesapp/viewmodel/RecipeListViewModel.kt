@@ -1,10 +1,8 @@
+// RecipeListViewModel.kt
 package com.tasty.recipesapp.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.tasty.recipesapp.repository.RecipeRepository
 import com.tasty.recipesapp.repository.recipe.model.RecipeModel
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +16,10 @@ class RecipeListViewModel(application: Application) : AndroidViewModel(applicati
     private val _recipeList = MutableLiveData<List<RecipeModel>>()
     val recipeList: LiveData<List<RecipeModel>> get() = _recipeList
 
+    // LiveData to hold the selected RecipeModel
+    private val _selectedRecipe = MutableLiveData<RecipeModel>()
+    val selectedRecipe: LiveData<RecipeModel> get() = _selectedRecipe
+
     /**
      * Fetches recipe data from the repository and updates LiveData.
      */
@@ -26,5 +28,12 @@ class RecipeListViewModel(application: Application) : AndroidViewModel(applicati
             val recipes = repository.getAllRecipes()
             _recipeList.postValue(recipes)
         }
+    }
+
+    /**
+     * Sets the selected recipe.
+     */
+    fun selectRecipe(recipe: RecipeModel) {
+        _selectedRecipe.value = recipe
     }
 }

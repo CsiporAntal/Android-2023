@@ -1,14 +1,16 @@
+// RecipesFragment.kt
 package com.tasty.recipesapp.ui.recipe
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.tasty.recipesapp.R
 import com.tasty.recipesapp.databinding.FragmentRecipesBinding
+import com.tasty.recipesapp.repository.adapter.RecipeListAdapter
 import com.tasty.recipesapp.viewmodel.RecipeListViewModel
 
 class RecipesFragment : Fragment() {
@@ -21,43 +23,34 @@ class RecipesFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentRecipesBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    ) = FragmentRecipesBinding.inflate(inflater, container, false).also {
+        _binding = it
+    }.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize the ViewModel
-        viewModel = ViewModelProvider(this).get(RecipeListViewModel::class.java)
+        // Use the activity as the ViewModelStoreOwner to share the ViewModel between fragments
+        viewModel = ViewModelProvider(requireActivity()).get(RecipeListViewModel::class.java)
 
-        // Observe the recipe list LiveData
-        viewModel.recipeList.observe(viewLifecycleOwner, Observer { recipes ->
-            // Loop through the list of RecipeModels and print properties
+        val recyclerView = binding.recyclerViewRecipes
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-            for (recipe in recipes) {
-                Log.d("RecipeData", "Recipe ID: ${recipe.id}")
-                Log.d("RecipeData", "Recipe Name: ${recipe.name}")
-                Log.d("RecipeData", "Recipe Description: ${recipe.description}")
-                Log.d("RecipeData", "Recipe Nutrition: ${recipe.nutrition}")
-                Log.d("RecipeData", "Recipe Components: ${recipe.components}")
-                Log.d("RecipeData", "Recipe Instructions: ${recipe.instructions}")
-                Log.d("RecipeData", "Recipe Thumbnail URL: ${recipe.thumbnailUrl}")
-                Log.d("RecipeData", "Recipe Keywords: ${recipe.keywords}")
-                Log.d("RecipeData", "Recipe isPublic: ${recipe.isPublic}")
-                Log.d("RecipeData", "Recipe User Email: ${recipe.userEmail}")
-                Log.d("RecipeData", "Recipe Original Video URL: ${recipe.originalVideoUrl}")
-                Log.d("RecipeData", "Recipe Country: ${recipe.country}")
-                Log.d("RecipeData", "Recipe Number of Servings: ${recipe.numServings}")
+        viewModel.recipeList.observe(viewLifecycleOwner) { recipes ->
+            val adapter = RecipeListAdapter(recipes) { selectedRecipe ->
+                // Update the selected recipe in the ViewModel
+                viewModel.selectRecipe(selectedRecipe)
 
+                // Navigate to the RecipeDetailFragment
+                val recipeDetailFragment = RecipeDetailFragment()
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, recipeDetailFragment)
+                    .addToBackStack(null)
+                    .commit()
             }
+            recyclerView.adapter = adapter
+        }
 
-            // TODO: Update your UI with the recipe data
-            // Set up a RecyclerView adapter here
-        })
-
-        // Fetch the recipe data
         viewModel.fetchRecipeData()
     }
 

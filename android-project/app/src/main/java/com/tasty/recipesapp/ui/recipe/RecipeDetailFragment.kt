@@ -1,60 +1,97 @@
+// RecipeDetailFragment.kt
 package com.tasty.recipesapp.ui.recipe
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.tasty.recipesapp.R
+import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
+import com.tasty.recipesapp.databinding.FragmentRecipeDetailBinding
+import com.tasty.recipesapp.repository.recipe.model.RecipeModel
+import com.tasty.recipesapp.viewmodel.RecipeListViewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [RecipeDetailFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class RecipeDetailFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private var _binding: FragmentRecipeDetailBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var viewModel: RecipeListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
+        // Use the activity as the ViewModelStoreOwner to share the ViewModel between fragments
+        viewModel = ViewModelProvider(requireActivity()).get(RecipeListViewModel::class.java)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_recipe_detail, container, false)
+    ) = FragmentRecipeDetailBinding.inflate(inflater, container, false).also {
+        _binding = it
+    }.root
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Observe the selected recipe
+        viewModel.selectedRecipe.observe(viewLifecycleOwner) { recipe ->
+            if (recipe != null) {
+                displayRecipeDetails(recipe)
+            }
+        }
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment RecipeDetailFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            RecipeDetailFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    private fun displayRecipeDetails(recipe: RecipeModel) {
+        binding.textViewRecipeName.text = recipe.name
+        binding.textViewRecipeDescription.text = recipe.description
+        binding.textViewServings.text = "Servings: ${recipe.numServings}"
+
+        Glide.with(requireContext())
+            .load(recipe.thumbnailUrl)
+            .into(binding.imageViewThumbnail)
+
+        // Display Ingredients
+        binding.linearLayoutIngredients.removeAllViews()
+        for (component in recipe.components) {
+            val textView = TextView(requireContext())
+            val unitName = component.measurement.unit?.name ?: ""
+            textView.text = "${component.measurement.amount} $unitName ${component.ingredient.name}"
+            binding.linearLayoutIngredients.addView(textView)
+        }
+
+        // Display Instructions
+        binding.linearLayoutInstructions.removeAllViews()
+        for (instruction in recipe.instructions) {
+            val textView = TextView(requireContext())
+            textView.text = "${instruction.position}. ${instruction.displayText}"
+            binding.linearLayoutInstructions.addView(textView)
+        }
+
+        // Display Nutrition Information
+        binding.linearLayoutNutrition.removeAllViews()
+        recipe.nutrition?.let { nutrition ->
+            val nutritionInfo = listOf(
+                "Calories: ${nutrition.calories}",
+                "Fat: ${nutrition.fat}g",
+                "Protein: ${nutrition.protein}g",
+                "Carbs: ${nutrition.carbohydrates}g",
+                "Sugar: ${nutrition.sugar}g",
+                "Fiber: ${nutrition.fiber}g"
+            )
+            for (info in nutritionInfo) {
+                val textView = TextView(requireContext())
+                textView.text = info
+                binding.linearLayoutNutrition.addView(textView)
             }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

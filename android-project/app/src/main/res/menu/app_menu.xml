@@ -11,5 +11,5 @@
     <item
             android:id="@+id/profileFragment"
             android:icon="@drawable/profile"
-            android:title="Profile"/>
+            android:title="MyRecipe"/>
 </menu>
